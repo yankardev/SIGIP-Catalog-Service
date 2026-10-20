@@ -7,7 +7,7 @@ import pe.sigip.catalog.config.CacheNombres;
 import pe.sigip.catalog.dto.*;
 import pe.sigip.catalog.model.*;
 import pe.sigip.catalog.repository.*;
-import pe.sigip.common.error.RecursoNoEncontradoException;
+import pe.edu.cibertec.sigip.common.error.RecursoNoEncontradoException;
 import java.util.List;
 @Service @RequiredArgsConstructor
 public class ServicioImpresionService {
