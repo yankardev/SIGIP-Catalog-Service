@@ -5,17 +5,41 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>pe.edu.cibertec.sigip</groupId>
-        <artifactId>sigip-parent</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
-        <relativePath>../../pom.xml</relativePath>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>4.1.1</version>
+        <relativePath/>
     </parent>
 
+    <groupId>pe.edu.cibertec.sigip</groupId>
     <artifactId>catalog-service</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
     <name>catalog-service</name>
     <description>SIGIP - Catálogo: categorías y servicios de impresión (con caché Caffeine)</description>
 
+    <properties>
+        <java.version>25</java.version>
+        <spring-cloud.version>2025.1.2</spring-cloud.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webmvc</artifactId>
@@ -31,6 +55,7 @@
         <dependency>
             <groupId>pe.edu.cibertec.sigip</groupId>
             <artifactId>sigip-common</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
@@ -88,6 +113,19 @@
     <build>
         <finalName>catalog-service</finalName>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
