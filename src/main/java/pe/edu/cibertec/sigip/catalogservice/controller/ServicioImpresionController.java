@@ -4,8 +4,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 import pe.edu.cibertec.sigip.catalogservice.dto.ServicioImpresionRequest;
 import pe.edu.cibertec.sigip.catalogservice.dto.ServicioImpresionResponse;
 import pe.edu.cibertec.sigip.catalogservice.service.ServicioImpresionService;
@@ -24,7 +24,7 @@ public class ServicioImpresionController {
         return ResponseEntity.ok(servicioService.listar());
     }
 
-    /** Servicios activos: lo que ve el cliente en el catálogo. */
+    /** Catálogo comercial visible para el cliente y para el personal. */
     @GetMapping("/activos")
     public ResponseEntity<List<ServicioImpresionResponse>> listarActivos() {
         return ResponseEntity.ok(servicioService.listarActivos());
@@ -36,7 +36,7 @@ public class ServicioImpresionController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','VENTAS')")
     public ResponseEntity<ServicioImpresionResponse> registrar(
             @Valid @RequestBody ServicioImpresionRequest request
     ) {
@@ -45,7 +45,7 @@ public class ServicioImpresionController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','VENTAS')")
     public ResponseEntity<ServicioImpresionResponse> actualizar(
             @PathVariable Integer id,
             @Valid @RequestBody ServicioImpresionRequest request
@@ -54,7 +54,7 @@ public class ServicioImpresionController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','VENTAS')")
     public ResponseEntity<Void> eliminar(@PathVariable Integer id) {
         servicioService.eliminar(id);
         return ResponseEntity.noContent().build();
