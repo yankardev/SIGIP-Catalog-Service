@@ -9,18 +9,20 @@ import org.springframework.transaction.annotation.Transactional;
 import pe.edu.cibertec.sigip.catalogservice.config.CacheNombres;
 import pe.edu.cibertec.sigip.catalogservice.dto.ServicioImpresionRequest;
 import pe.edu.cibertec.sigip.catalogservice.dto.ServicioImpresionResponse;
+import pe.edu.cibertec.sigip.catalogservice.dto.ServicioOpcionResponse;
 import pe.edu.cibertec.sigip.catalogservice.model.Categoria;
 import pe.edu.cibertec.sigip.catalogservice.model.ServicioImpresion;
 import pe.edu.cibertec.sigip.catalogservice.repository.CategoriaRepository;
 import pe.edu.cibertec.sigip.catalogservice.repository.ServicioImpresionRepository;
+import pe.edu.cibertec.sigip.catalogservice.repository.ServicioOpcionRepository;
 import pe.edu.cibertec.sigip.common.error.RecursoNoEncontradoException;
 
 import java.util.List;
 
 /**
  * Lógica del catálogo de servicios de impresión.
- * Optimización aplicada: consultas con JOIN FETCH (sin N+1) y caché en memoria (Caffeine)
- * para las lecturas, que son mucho más frecuentes que las escrituras. Toda escritura invalida la caché.
+ * Las lecturas frecuentes se mantienen cacheadas y las opciones de personalización
+ * se consultan solo cuando un servicio las necesita.
  */
 @Service
 @RequiredArgsConstructor
@@ -28,6 +30,7 @@ public class ServicioImpresionService {
 
     private final ServicioImpresionRepository servicioRepository;
     private final CategoriaRepository categoriaRepository;
+    private final ServicioOpcionRepository opcionRepository;
 
     @Transactional(readOnly = true)
     @Cacheable(value = CacheNombres.SERVICIOS, key = "'todos'")
@@ -52,6 +55,14 @@ public class ServicioImpresionService {
                 .orElseThrow(() -> new RecursoNoEncontradoException("Servicio de impresión no encontrado")));
     }
 
+    @Transactional(readOnly = true)
+    public List<ServicioOpcionResponse> listarOpciones(Integer idservicio) {
+        ServicioImpresion servicio = buscar(idservicio);
+        if (!Boolean.TRUE.equals(servicio.getPersonalizable())) return List.of();
+        return opcionRepository.findByServicioIdservicioAndActivoTrueOrderByGrupoAscOrdenAscNombreAsc(idservicio)
+                .stream().map(ServicioOpcionResponse::from).toList();
+    }
+
     @Transactional
     @CacheEvict(value = CacheNombres.SERVICIOS, allEntries = true)
     public ServicioImpresionResponse registrar(ServicioImpresionRequest request) {
@@ -60,6 +71,8 @@ public class ServicioImpresionService {
                 .descripcion(request.descripcion())
                 .precioBase(request.precioBase())
                 .requiereCotizacion(request.requiereCotizacion())
+                .personalizable(Boolean.TRUE.equals(request.personalizable()))
+                .imagenUrl(request.imagenUrl())
                 .activo(request.activo() == null || request.activo())
                 .categoria(buscarCategoria(request.idcategoria()))
                 .build();
@@ -79,10 +92,10 @@ public class ServicioImpresionService {
         servicio.setDescripcion(request.descripcion());
         servicio.setPrecioBase(request.precioBase());
         servicio.setRequiereCotizacion(request.requiereCotizacion());
+        servicio.setPersonalizable(Boolean.TRUE.equals(request.personalizable()));
+        servicio.setImagenUrl(request.imagenUrl());
         servicio.setCategoria(buscarCategoria(request.idcategoria()));
-        if (request.activo() != null) {
-            servicio.setActivo(request.activo());
-        }
+        if (request.activo() != null) servicio.setActivo(request.activo());
 
         return ServicioImpresionResponse.from(servicioRepository.save(servicio));
     }
