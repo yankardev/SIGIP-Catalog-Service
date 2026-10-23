@@ -8,6 +8,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pe.edu.cibertec.sigip.catalogservice.dto.ServicioImpresionRequest;
 import pe.edu.cibertec.sigip.catalogservice.dto.ServicioImpresionResponse;
+import pe.edu.cibertec.sigip.catalogservice.dto.ServicioOpcionResponse;
 import pe.edu.cibertec.sigip.catalogservice.service.ServicioImpresionService;
 
 import java.util.List;
@@ -21,12 +22,18 @@ public class ServicioImpresionController {
     @GetMapping
     public ResponseEntity<List<ServicioImpresionResponse>> listar() { return ResponseEntity.ok(servicioService.listar()); }
 
-    /** Servicios vigentes disponibles para registrar cotizaciones y pedidos. */
+    /** Servicios vigentes disponibles para registrar pedidos. */
     @GetMapping("/activos")
     public ResponseEntity<List<ServicioImpresionResponse>> listarActivos() { return ResponseEntity.ok(servicioService.listarActivos()); }
 
     @GetMapping("/{id}")
     public ResponseEntity<ServicioImpresionResponse> obtener(@PathVariable Integer id) { return ResponseEntity.ok(servicioService.obtener(id)); }
+
+    /** Opciones de precio para servicios personalizables: tamaño, material, acabado, etc. */
+    @GetMapping("/{id}/opciones")
+    public ResponseEntity<List<ServicioOpcionResponse>> opciones(@PathVariable Integer id) {
+        return ResponseEntity.ok(servicioService.listarOpciones(id));
+    }
 
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN','VENTAS')")
