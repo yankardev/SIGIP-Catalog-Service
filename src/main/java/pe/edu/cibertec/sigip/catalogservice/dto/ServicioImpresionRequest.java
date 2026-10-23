@@ -24,6 +24,17 @@ public record ServicioImpresionRequest(
         Integer idcategoria,
 
         /** Opcional: permite desactivar un servicio sin borrarlo. Si no se envía, se conserva. */
-        Boolean activo
+        Boolean activo,
+
+        /** Si es true, el precio final se calcula con opciones configurables. */
+        Boolean personalizable,
+
+        @Size(max = 300, message = "La ruta de imagen no puede superar 300 caracteres")
+        String imagenUrl
 ) {
+    /** Mantiene compatibilidad con las pruebas y clientes que usan el contrato anterior. */
+    public ServicioImpresionRequest(String nombre, String descripcion, BigDecimal precioBase,
+                                    Boolean requiereCotizacion, Integer idcategoria, Boolean activo) {
+        this(nombre, descripcion, precioBase, requiereCotizacion, idcategoria, activo, false, null);
+    }
 }
