@@ -31,6 +31,18 @@ public class ServicioImpresion {
     @Builder.Default
     private Boolean requiereCotizacion = false;
 
+    /**
+     * Indica que el precio final se obtiene sumando al precio base las opciones
+     * elegidas (material, tamaño, acabado, etc.).
+     */
+    @Column(nullable = false)
+    @Builder.Default
+    private Boolean personalizable = false;
+
+    /** Ruta pública utilizada por Angular para representar visualmente el servicio. */
+    @Column(name = "imagen_url", length = 300)
+    private String imagenUrl;
+
     @Column(nullable = false)
     @Builder.Default
     private Boolean activo = true;
