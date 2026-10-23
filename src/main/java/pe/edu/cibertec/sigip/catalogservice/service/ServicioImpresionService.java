@@ -19,11 +19,6 @@ import pe.edu.cibertec.sigip.common.error.RecursoNoEncontradoException;
 
 import java.util.List;
 
-/**
- * Lógica del catálogo de servicios de impresión.
- * Las lecturas frecuentes se mantienen cacheadas y las opciones de personalización
- * se consultan solo cuando un servicio las necesita.
- */
 @Service
 @RequiredArgsConstructor
 public class ServicioImpresionService {
@@ -35,17 +30,13 @@ public class ServicioImpresionService {
     @Transactional(readOnly = true)
     @Cacheable(value = CacheNombres.SERVICIOS, key = "'todos'")
     public List<ServicioImpresionResponse> listar() {
-        return servicioRepository.listarConCategoria().stream()
-                .map(ServicioImpresionResponse::from)
-                .toList();
+        return servicioRepository.listarConCategoria().stream().map(ServicioImpresionResponse::from).toList();
     }
 
     @Transactional(readOnly = true)
     @Cacheable(value = CacheNombres.SERVICIOS, key = "'activos'")
     public List<ServicioImpresionResponse> listarActivos() {
-        return servicioRepository.listarActivosConCategoria().stream()
-                .map(ServicioImpresionResponse::from)
-                .toList();
+        return servicioRepository.listarActivosConCategoria().stream().map(ServicioImpresionResponse::from).toList();
     }
 
     @Transactional(readOnly = true)
@@ -76,7 +67,6 @@ public class ServicioImpresionService {
                 .activo(request.activo() == null || request.activo())
                 .categoria(buscarCategoria(request.idcategoria()))
                 .build();
-
         return ServicioImpresionResponse.from(servicioRepository.save(servicio));
     }
 
@@ -87,16 +77,14 @@ public class ServicioImpresionService {
     })
     public ServicioImpresionResponse actualizar(Integer id, ServicioImpresionRequest request) {
         ServicioImpresion servicio = buscar(id);
-
         servicio.setNombre(request.nombre());
         servicio.setDescripcion(request.descripcion());
         servicio.setPrecioBase(request.precioBase());
         servicio.setRequiereCotizacion(request.requiereCotizacion());
-        servicio.setPersonalizable(Boolean.TRUE.equals(request.personalizable()));
-        servicio.setImagenUrl(request.imagenUrl());
         servicio.setCategoria(buscarCategoria(request.idcategoria()));
+        if (request.personalizable() != null) servicio.setPersonalizable(request.personalizable());
+        if (request.imagenUrl() != null && !request.imagenUrl().isBlank()) servicio.setImagenUrl(request.imagenUrl());
         if (request.activo() != null) servicio.setActivo(request.activo());
-
         return ServicioImpresionResponse.from(servicioRepository.save(servicio));
     }
 
