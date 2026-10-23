@@ -23,6 +23,7 @@ public interface ServicioImpresionRepository extends JpaRepository<ServicioImpre
     Optional<ServicioImpresion> buscarConCategoria(Integer id);
 
     List<ServicioImpresion> findByActivoTrueOrderByNombreAsc();
+    Optional<ServicioImpresion> findByNombre(String nombre);
 
     boolean existsByCategoriaIdcategoria(Integer idcategoria);
 }
