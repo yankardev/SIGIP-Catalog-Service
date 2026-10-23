@@ -12,7 +12,9 @@ public record ServicioImpresionResponse(
         Boolean requiereCotizacion,
         Boolean activo,
         Integer idcategoria,
-        String categoria
+        String categoria,
+        Boolean personalizable,
+        String imagenUrl
 ) {
 
     public static ServicioImpresionResponse from(ServicioImpresion servicio) {
@@ -24,7 +26,9 @@ public record ServicioImpresionResponse(
                 servicio.getRequiereCotizacion(),
                 servicio.getActivo(),
                 servicio.getCategoria().getIdcategoria(),
-                servicio.getCategoria().getNombre()
+                servicio.getCategoria().getNombre(),
+                servicio.getPersonalizable(),
+                servicio.getImagenUrl()
         );
     }
 }
